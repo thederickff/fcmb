@@ -38,7 +38,7 @@ typedef struct tagBITMAPFILEHEADER {
     	unsigned int 		bfOffBits;
 } BITMAPFILEHEADER, *PBITMAPFILEHEADER;
 
-int write_bmp_file(unsigned char *pImage, int width, int height)
+int write_bmp_file(unsigned char *pImage, int width, int height, const char* filename)
 {
 	BITMAPINFO *pDIBHeader;
 	BITMAPFILEHEADER  bmfHeader;
@@ -71,7 +71,7 @@ int write_bmp_file(unsigned char *pImage, int width, int height)
 	bmfHeader.bfOffBits = 14 + pDIBHeader->bmiHeader.biSize + sizeof(RGBQUAD) * 256;
 	//write to file
 	FILE *fp;
-	fp = fopen("frame_Ex.bmp", "wb");
+	fp = fopen(filename, "wb");
 	if(fp == NULL)
 	{
 		std::cout << "Failed to write to file\n";
@@ -121,7 +121,7 @@ int write_bmp_file(unsigned char *pImage, int width, int height)
 	}
 	fwrite((void *) pDIBData, 1, width * height, fp);
 	fclose(fp);
-	std::cout << "Fingerprint image is written to file: frame_Ex.bmp.\n";
+	std::cout << "Fingerprint image is written to file: " << filename << ".\n";
 	free(pDIBData);
 	free(pDIBHeader);
 	return 0;
@@ -163,22 +163,32 @@ void ShowMsg(unsigned long nErrCode)
 
 int main(int argc, char *argv[])
 {
+	if (argc < 3) {
+		std::cerr << "Usage:" << std::endl;
+		std::cerr << "dftr_scan [option] [file_name]\n" << std::endl;
+		std::cerr << "Options:" << std::endl;
+		std::cerr << "new\t\tCreate a new fingerprint" << std::endl;
+		std::cerr << "compare\t\tCompare with a existing fingerprint\n" << std::endl;
+		return 1;
+	}
+	std::string filename = argv[2];
+
 	void *hDevice;
 	FTRSCAN_IMAGE_SIZE ImageSize;
 	unsigned char *pBuffer;
 	int i;
 
 	hDevice = ftrScanOpenDevice();
-	if( hDevice == NULL )
+	if(hDevice == NULL)
 	{
 		std::cout << "Failed to open device!\n";
 		return -1;
 	} 
 
-	if( !ftrScanGetImageSize( hDevice, &ImageSize ) )
+	if(!ftrScanGetImageSize(hDevice, &ImageSize))
 	{
 		std::cout << "Failed to get image size\n";
-		ftrScanCloseDevice( hDevice );
+		ftrScanCloseDevice(hDevice);
 		return -1;
 	}
 	else
@@ -188,7 +198,7 @@ int main(int argc, char *argv[])
 		std::cout << "Please put your finger on the scanner:\n";
 		while(1)
 		{
-			if( ftrScanIsFingerPresent( hDevice, NULL ) )
+			if(ftrScanIsFingerPresent(hDevice, NULL))
 				break;
 			for(i=0; i<50; i++);	//sleep(1)
 		}
@@ -196,16 +206,17 @@ int main(int argc, char *argv[])
 		if(ftrScanGetFrame(hDevice, pBuffer, NULL) )
 		{
 			std::cout << "Done!\nWriting to file......\n";
-			write_bmp_file( pBuffer, ImageSize.nWidth, ImageSize.nHeight );
+			write_bmp_file(pBuffer, ImageSize.nWidth, ImageSize.nHeight, (filename + ".bmp").c_str());
 		}
 		else {
-			std::cout << "Failed to get image?\n";
+			std::cout << "Failed to get image:\n";
 			ShowMsg(ftrScanGetLastError());
 		}
 			
-		free( pBuffer );
+		free(pBuffer);
 	}
 
-	ftrScanCloseDevice( hDevice );
+	ftrScanCloseDevice(hDevice);
+	
 	return 0;
 }
