@@ -1,8 +1,7 @@
-#include "ftrScanAPI.h"
+#include <iostream>
+#include <ftrscanapi.h>
+#include <cstring>
 #include "Scanner.h"
-//#include <string>
-//#include <cstdio>
-//#include <cstdlib>
 
 int Scanner::ScanImage(std::string output)
 {
@@ -47,12 +46,11 @@ int Scanner::ScanImage(std::string output)
 	ftrScanCloseDevice(m_Device);
 }
 
-int write_bmp_file(unsigned char *pImage, int width, int height, const char* filename)
+int Scanner::write_bmp_file(unsigned char *pImage, int width, int height, const char* filename)
 {
     BITMAPINFO *pDIBHeader;
 	BITMAPFILEHEADER  bmfHeader;
 	int iCyc;
-
 	// allocate memory for a DIB header
 	if((pDIBHeader = (BITMAPINFO *) malloc(sizeof(BITMAPINFO) + sizeof(RGBQUAD) * 255)) == NULL)
 	{

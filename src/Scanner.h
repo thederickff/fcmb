@@ -2,7 +2,7 @@
 #define SCANNER_H
 
 #include <iostream>
-#include "ftrScanAPI.h"
+#include <ftrscanapi.h>
 
 typedef struct tagBITMAPINFOHEADER {
     unsigned int 		biSize;
