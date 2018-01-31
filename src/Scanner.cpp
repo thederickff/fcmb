@@ -1,48 +1,55 @@
-#ifndef BITMAP_WRITE_H
-#define BITMAP_WRITE_H
+#include "ftrScanAPI.h"
+#include "Scanner.h"
+//#include <string>
+//#include <cstdio>
+//#include <cstdlib>
 
-#include <iostream>
-#include <string>
-#include <cstdio>
-#include <cstdlib>
+int Scanner::ScanImage(std::string output)
+{
+	m_Device = ftrScanOpenDevice();
+	if(m_Device == NULL)
+	{
+		std::cout << "Failed to open device!\n";
+		return -1;
+	} 
 
-typedef struct tagBITMAPINFOHEADER {
-    	unsigned int 		biSize;
-    	int					biWidth;
-    	int					biHeight;
-    	unsigned short int 	biPlanes;
-    	unsigned short int 	biBitCount;
-    	unsigned int 		biCompression;
-    	unsigned int 		biSizeImage;
-    	int					biXPelsPerMeter;
-    	int					biYPelsPerMeter;
-    	unsigned int 		biClrUsed;
-    	unsigned int 		biClrImportant;
-} BITMAPINFOHEADER, *PBITMAPINFOHEADER;
+	if(!ftrScanGetImageSize(m_Device, &m_ImageSize))
+	{
+		std::cout << "Failed to get image size\n";
+		ftrScanCloseDevice(m_Device);
+		return -1;
+	}
+	else
+	{
+		std::cout << "Image size is " << m_ImageSize.nImageSize << "\n";
+		m_pBuffer = (unsigned char *)malloc( m_ImageSize.nImageSize );
+		std::cout << "Please put your finger on the scanner:\n";
+		while(1)
+		{
+			if(ftrScanIsFingerPresent(m_Device, NULL))
+				break;
+			for(int i=0; i<50; i++);	//sleep(1)
+		}
+		std::cout << "Capturing fingerprint ......\n";
+		if(ftrScanGetFrame(m_Device, m_pBuffer, NULL) )
+		{
+			std::cout << "Done!\nWriting to file......\n";
+			write_bmp_file(m_pBuffer, m_ImageSize.nWidth, m_ImageSize.nHeight, (output + ".bmp").c_str());
+		}
+		else {
+			std::cout << "Failed to get image:\n";
+			showError(ftrScanGetLastError());
+		}
+			
+		free(m_pBuffer);
+	}
 
-typedef struct tagRGBQUAD {
-    	unsigned char rgbBlue;
-    	unsigned char rgbGreen;
-    	unsigned char rgbRed;
-    	unsigned char rgbReserved;
-} RGBQUAD;
-
-typedef struct tagBITMAPINFO {
-    	BITMAPINFOHEADER 	bmiHeader;
-    	RGBQUAD 			bmiColors[1];
-} BITMAPINFO, *PBITMAPINFO;
-
-typedef struct tagBITMAPFILEHEADER {
-    	unsigned short int 	bfType;
-    	unsigned int 		bfSize;
-    	unsigned short int 	bfReserved1;
-    	unsigned short int 	bfReserved2;
-    	unsigned int 		bfOffBits;
-} BITMAPFILEHEADER, *PBITMAPFILEHEADER;
+	ftrScanCloseDevice(m_Device);
+}
 
 int write_bmp_file(unsigned char *pImage, int width, int height, const char* filename)
 {
-	BITMAPINFO *pDIBHeader;
+    BITMAPINFO *pDIBHeader;
 	BITMAPFILEHEADER  bmfHeader;
 	int iCyc;
 
@@ -66,8 +73,6 @@ int write_bmp_file(unsigned char *pImage, int width, int height, const char* fil
 		pDIBHeader->bmiColors[iCyc].rgbBlue = pDIBHeader->bmiColors[iCyc].rgbGreen = pDIBHeader->bmiColors[iCyc].rgbRed = (unsigned char) iCyc;
 	}
 	// set BITMAPFILEHEADER structure
-	//((char *)(&bmfHeader.bfType))[0] = 'B';
-	//((char *)(&bmfHeader.bfType))[1] = 'M';
 	bmfHeader.bfType = 0x42 + 0x4D * 0x100;
 	bmfHeader.bfSize = 14 + sizeof(BITMAPINFO) + sizeof(RGBQUAD) * 255 + width * height;	//sizeof(BITMAPFILEHEADER) = 14
 	bmfHeader.bfOffBits = 14 + pDIBHeader->bmiHeader.biSize + sizeof(RGBQUAD) * 256;
@@ -126,7 +131,39 @@ int write_bmp_file(unsigned char *pImage, int width, int height, const char* fil
 	std::cout << "Fingerprint image is written to file: " << filename << ".\n";
 	free(pDIBData);
 	free(pDIBHeader);
-	return 0;
+	return 0;    
 }
 
-#endif // BIMAP_WRITE_H
+// Show the Message
+void Scanner::showError(unsigned long nErrCode)
+{
+    switch( nErrCode ) 
+	{
+    case 0:
+        std::cout << "OK";
+        break;
+    case FTR_ERROR_EMPTY_FRAME:	// ERROR_EMPTY
+        std::cout << "- Empty frame -\n";
+        break;
+    case FTR_ERROR_MOVABLE_FINGER:
+        std::cout << "- Movable finger -\n";
+        break;
+    case FTR_ERROR_NO_FRAME:
+        std::cout <<  "- No frame -\n";
+        break;
+    case FTR_ERROR_USER_CANCELED:
+        std::cout << "- User canceled -\n";
+        break;
+    case FTR_ERROR_HARDWARE_INCOMPATIBLE:
+        std::cout << "- Incompatible hardware -\n";
+        break;
+    case FTR_ERROR_FIRMWARE_INCOMPATIBLE:
+        std::cout << "- Incompatible firmware -\n";
+        break;
+    case FTR_ERROR_INVALID_AUTHORIZATION_CODE:
+        std::cout << "- Invalid authorization code -\n";
+        break;
+    default:
+        std::cout << "Unknown return code - " << nErrCode << "\n";
+	}
+}
