@@ -38,6 +38,7 @@ int Scanner::ScanImage(std::string output)
 		else {
 			std::cout << "Failed to get image:\n";
 			showError(ftrScanGetLastError());
+			return -1;
 		}
 			
 		free(m_pBuffer);
