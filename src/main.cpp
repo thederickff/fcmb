@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "Scanner.h"
+#include "Cwsq.h"
 
 int debug = 0;
 
@@ -14,17 +15,14 @@ int main(int argc, char *argv[])
 		//std::cerr << "compare\t\tCompare with a existing fingerprint\n" << std::endl;
 		return 1;
 	}
+	// Scan finger and generates a bitmap
 	Scanner scanner;
 	std::string filename = argv[2];
-
+	std::string bmp_ext = ".bmp";
 	scanner.ScanImage(filename);
-
-	std::string oconfig = "2.25 wsq ";
-	std::string ifile = filename + std::string(".bmp ");
-	std::string raw_in = "-raw_in 320,480,8";	/* image characteristic parameters */
-
-	std::string command = std::string("exec\\cwsq.exe ") + oconfig + ifile + raw_in;
-	system(command.c_str());	
+	// Compress bitmap file to WSQ
+	Cwsq cwsq(filename + bmp_ext);
+	cwsq.Execute();
 
 	return 0;
 }
