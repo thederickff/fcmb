@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+extern int debug;
+
 class Cwsq 
 {
 public:
