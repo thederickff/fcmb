@@ -2,6 +2,7 @@
 
 #include "Scanner.h"
 #include "Cwsq.h"
+#include "Mindtct.h"
 
 int debug = 0;
 
@@ -19,10 +20,14 @@ int main(int argc, char *argv[])
 	Scanner scanner;
 	std::string filename = argv[2];
 	std::string bmp_ext = ".bmp";
-	scanner.ScanImage(filename);
+	if(scanner.ScanImage(filename) != 0) return -1;
 	// Compress bitmap file to WSQ
 	Cwsq cwsq(filename + bmp_ext);
 	cwsq.Execute();
+	// Generate fingerprint caracteristics (.xyt file)
+	Mindtct mindtct(filename);
+
+	mindtct.Execute();
 
 	return 0;
 }
