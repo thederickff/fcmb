@@ -44,6 +44,7 @@ int Scanner::ScanImage(std::string output)
 	}
 
 	ftrScanCloseDevice(m_Device);
+	return 0;
 }
 
 int Scanner::write_bmp_file(unsigned char *pImage, int width, int height, const char* filename)
