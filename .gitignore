@@ -27,7 +27,6 @@
 #*.lib
 
 # Executables
-*.exe
 *.out
 *.app
 /dist/
@@ -36,3 +35,4 @@
 # Other files
 /.vscode/
 *.bmp
+*.wsq

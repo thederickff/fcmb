@@ -1,6 +1,6 @@
 CC = g++
 FLAGS = -Wall -lftrscanapi
-PROGRAM = bin/fcmb
+PROGRAM = fcmb
 FILES = src/main.o src/Scanner.o
 
 all: $(FILES)
