@@ -1,13 +1,3 @@
-/*
-
-Copyright (c) 2003-2008 Futronic Technology Company Ltd. All rights reserved.
-
-Abstract:
-
-Definitions and prototypes for the Futronic Scanner API.
-
-*/
-
 #ifndef __FUTRONIC_SCAN_API_H__
 #define __FUTRONIC_SCAN_API_H__
 
