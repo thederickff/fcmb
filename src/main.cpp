@@ -32,5 +32,7 @@ int main(int argc, char *argv[])
 	Mindtct mindtct(directory + name);
 	mindtct.Execute();
 
+	rename((directory + name + bmp_ext).c_str(), (directory + std::string("bmp\\") + name + bmp_ext).c_str());
+
 	return 0;
 }
