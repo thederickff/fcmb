@@ -1,16 +1,12 @@
-## FtrScanReader
-Futronic Scanner Fingerprint Reader
+## Futronic Cwsq Mindtct Bozorth3 (FCMB)
 
-This repository contains a example of how to use the ftrScanApi library.
+This program was done to facilitate the life of those whom has a futronic device but didn't find a SDK, or is not able to pay $1000 dollars to get one from Futronic company.
 
-Currently, it only makes connection with a fs80 scanner, read and writes a fingerprint to a bitmap image file.
+It program communicates with a Futronic device, writes the reading finger into a bitmap and extracts its minutiae into a .xyt file. You can use the included software **Bozorth3** to compare .xyt files.
 
-### Building
-There is a zip file with the compiled implementation of ftrScanAPI.h on the <code>res/</code> so you can use to link.
+This project uses three softwares of NIST (National Institute of Standards and Technology), **Cwsq** (compress a bitmap file into a wsq), **Mindtct** (extracts fingerprint minutiae), and **Bozorth3** (Matches fingerprints minutiae).
+
+Currently, it only makes connection with a fs80 scanner, but you can try with others futronics devices, tell me if it works.
 
 ### Usage
-<code>ftr_scanner new [filename]</code>
-
-For example:<br/>
-<code>ftr_scanner new test</code><br/>
-If everything goes well, the scanner will request for a finger and it'll generate a <code>test.bmp</code> image of the finger scanned.
+<code>fcmb [directory] [name]</code><br/>
