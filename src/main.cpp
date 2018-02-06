@@ -8,18 +8,19 @@ int debug = 1;
 
 int main(int argc, char *argv[])
 {
-	if (argc < 4) {
+	if (argc < 3) {
 		std::cerr << "Usage:" << std::endl;
-		std::cerr << argv[0] << " [option] [directory] [name]\n" << std::endl;
-		std::cerr << "Options:" << std::endl;
-		std::cerr << "enroll\t\tEnroll a new fingerprint" << std::endl;
+		std::cerr << argv[0] << " [directory] [name]\n" << std::endl;
+		//std::cerr << "Options:" << std::endl;
+		//std::cerr << "enroll [directory] [name]\tGenerates a .xyt file" << std::endl;
+		//std::cerr << "verify galleryfile.xyt\t\tOne to one matching" << std::endl;
 		//std::cerr << "compare\t\tCompare with a existing fingerprint\n" << std::endl;
 		return 1;
 	}
 
-	std::string directory = argv[2];
+	std::string directory = argv[1];
 	directory += std::string("\\");
-	std::string name = argv[3];
+	std::string name = argv[2];
 	std::string bmp_ext = ".bmp";
 
 	// Scan finger and generates a bitmap
