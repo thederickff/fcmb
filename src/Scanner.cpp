@@ -20,7 +20,9 @@ int Scanner::ScanImage(std::string output)
 	}
 	else
 	{
-		std::cout << "Image size is " << m_ImageSize.nImageSize << "\n";
+		if (debug > 0)
+			std::cout << "Image size is " << m_ImageSize.nImageSize << "\n";
+
 		m_pBuffer = (unsigned char *)malloc( m_ImageSize.nImageSize );
 		std::cout << "Please put your finger on the scanner:\n";
 		while(1)
@@ -29,10 +31,14 @@ int Scanner::ScanImage(std::string output)
 				break;
 			for(int i=0; i<50; i++);	//sleep(1)
 		}
-		std::cout << "Capturing fingerprint ......\n";
+		if (debug > 0)
+			std::cout << "Capturing fingerprint ......\n";
+
 		if(ftrScanGetFrame(m_Device, m_pBuffer, NULL) )
 		{
-			std::cout << "Done!\nWriting to file......\n";
+			if (debug > 0)
+				std::cout << "Done!\nWriting to file......\n";
+
 			write_bmp_file(m_pBuffer, m_ImageSize.nWidth, m_ImageSize.nHeight, (output + ".bmp").c_str());
 		}
 		else {
@@ -128,7 +134,10 @@ int Scanner::write_bmp_file(unsigned char *pImage, int width, int height, const 
 	}
 	fwrite((void *) pDIBData, 1, width * height, fp);
 	fclose(fp);
-	std::cout << "Fingerprint image is written to file: " << filename << ".\n";
+	
+	if (debug > 0)
+		std::cout << "Fingerprint image is written to file: " << filename << ".\n";
+
 	free(pDIBData);
 	free(pDIBHeader);
 	return 0;    

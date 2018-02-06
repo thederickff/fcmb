@@ -38,6 +38,7 @@ typedef struct tagBITMAPFILEHEADER {
    	unsigned int 		bfOffBits;
 } BITMAPFILEHEADER, *PBITMAPFILEHEADER;
 
+extern int debug;
 
 class Scanner {
 public:
