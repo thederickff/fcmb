@@ -10,4 +10,7 @@ void Cwsq::Execute()
         std::cout << "Executing Cwsq" << std::endl;
     std::string command = m_App_name + m_Output + m_Image + m_Image_settings;
 	system(command.c_str());	
+
+    if (debug > 0)
+        std::cout << "Done!" << std::endl;
 }

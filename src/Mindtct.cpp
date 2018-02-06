@@ -10,10 +10,14 @@ Mindtct::~Mindtct()
     
     if (debug > 0)
         std::cout << "Clean up files" << std::endl;
+        
     for (int i = 0; i < size; ++i)
     {
         remove((m_File + std::string(extensions[i])).c_str());
     }
+
+    if (debug > 0)
+        std::cout << "Done!" << std::endl;
 }
 
 void Mindtct::Execute()
