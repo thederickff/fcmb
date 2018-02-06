@@ -39,7 +39,7 @@ int Scanner::ScanImage(std::string output)
 			if (debug > 0)
 				std::cout << "Done!\nWriting to file......\n";
 
-			write_bmp_file(m_pBuffer, m_ImageSize.nWidth, m_ImageSize.nHeight, (output + ".bmp").c_str());
+			write_bmp_file(m_pBuffer, m_ImageSize.nWidth, m_ImageSize.nHeight, output.c_str());
 		}
 		else {
 			std::cout << "Failed to get image:\n";
