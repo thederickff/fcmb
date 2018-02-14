@@ -2,7 +2,7 @@
 #define SCANNER_H
 
 #include <iostream>
-#include <ftrscanapi.h>
+#include <ftrScanApi.h>
 
 typedef struct tagBITMAPINFOHEADER {
     unsigned int 		biSize;
@@ -48,7 +48,7 @@ private:
     unsigned char *m_pBuffer;
 	FTRSCAN_IMAGE_SIZE m_ImageSize;
 
-    void showError(unsigned long nErrCode);
+    int showError(unsigned long nErrCode, std::string output);
     int write_bmp_file(unsigned char *pImage, int width, int height, const char* filename);
 };
 

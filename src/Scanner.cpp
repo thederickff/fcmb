@@ -1,5 +1,5 @@
 #include <iostream>
-#include <ftrscanapi.h>
+#include <ftrScanApi.h>
 #include <cstring>
 #include "Scanner.h"
 
@@ -43,15 +43,49 @@ int Scanner::ScanImage(std::string output)
 		}
 		else {
 			std::cout << "Failed to get image:\n";
-			showError(ftrScanGetLastError());
-			return -1;
-		}
-			
+			free(m_pBuffer);
+			ftrScanCloseDevice(m_Device);
+			return showError(ftrScanGetLastError(), output);
+		}	
 		free(m_pBuffer);
 	}
-
 	ftrScanCloseDevice(m_Device);
 	return 0;
+}
+// Show the Message
+int Scanner::showError(unsigned long nErrCode, std::string output)
+{
+    switch( nErrCode ) 
+	{
+    case 0:
+        std::cout << "OK";
+        break;
+    case FTR_ERROR_EMPTY_FRAME:	// ERROR_EMPTY
+        std::cout << "- Empty frame -\n";
+        break;
+    case FTR_ERROR_MOVABLE_FINGER:
+		if (debug > 0)
+        	std::cout << "- Movable finger -\n";	
+        return ScanImage(output);
+    case FTR_ERROR_NO_FRAME:
+        std::cout <<  "- No frame -\n";
+        break;
+    case FTR_ERROR_USER_CANCELED:
+        std::cout << "- User canceled -\n";
+        break;
+    case FTR_ERROR_HARDWARE_INCOMPATIBLE:
+        std::cout << "- Incompatible hardware -\n";
+        break;
+    case FTR_ERROR_FIRMWARE_INCOMPATIBLE:
+        std::cout << "- Incompatible firmware -\n";
+        break;
+    case FTR_ERROR_INVALID_AUTHORIZATION_CODE:
+        std::cout << "- Invalid authorization code -\n";
+        break;
+    default:
+        std::cout << "Unknown return code - " << nErrCode << "\n";
+	}
+	return -1;
 }
 
 int Scanner::write_bmp_file(unsigned char *pImage, int width, int height, const char* filename)
@@ -134,45 +168,10 @@ int Scanner::write_bmp_file(unsigned char *pImage, int width, int height, const 
 	}
 	fwrite((void *) pDIBData, 1, width * height, fp);
 	fclose(fp);
-	
-	if (debug > 0)
-		std::cout << "Fingerprint image is written to file: " << filename << ".\n";
+
+	std::cout << "Fingerprint image is written to file: " << filename << ".\n";
 
 	free(pDIBData);
 	free(pDIBHeader);
 	return 0;    
-}
-
-// Show the Message
-void Scanner::showError(unsigned long nErrCode)
-{
-    switch( nErrCode ) 
-	{
-    case 0:
-        std::cout << "OK";
-        break;
-    case FTR_ERROR_EMPTY_FRAME:	// ERROR_EMPTY
-        std::cout << "- Empty frame -\n";
-        break;
-    case FTR_ERROR_MOVABLE_FINGER:
-        std::cout << "- Movable finger -\n";
-        break;
-    case FTR_ERROR_NO_FRAME:
-        std::cout <<  "- No frame -\n";
-        break;
-    case FTR_ERROR_USER_CANCELED:
-        std::cout << "- User canceled -\n";
-        break;
-    case FTR_ERROR_HARDWARE_INCOMPATIBLE:
-        std::cout << "- Incompatible hardware -\n";
-        break;
-    case FTR_ERROR_FIRMWARE_INCOMPATIBLE:
-        std::cout << "- Incompatible firmware -\n";
-        break;
-    case FTR_ERROR_INVALID_AUTHORIZATION_CODE:
-        std::cout << "- Invalid authorization code -\n";
-        break;
-    default:
-        std::cout << "Unknown return code - " << nErrCode << "\n";
-	}
 }
