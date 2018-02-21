@@ -42,7 +42,6 @@ int Scanner::ScanImage(std::string output)
 			write_bmp_file(m_pBuffer, m_ImageSize.nWidth, m_ImageSize.nHeight, output.c_str());
 		}
 		else {
-			std::cout << "Failed to get image:\n";
 			free(m_pBuffer);
 			ftrScanCloseDevice(m_Device);
 			return showError(ftrScanGetLastError(), output);
@@ -55,6 +54,13 @@ int Scanner::ScanImage(std::string output)
 // Show the Message
 int Scanner::showError(unsigned long nErrCode, std::string output)
 {
+	// in case of moveable finger there is a way to try again
+	if (nErrCode == FTR_ERROR_MOVABLE_FINGER) {
+        return ScanImage(output);
+	}
+
+	std::cout << "Failed to get image:\n";
+
     switch( nErrCode ) 
 	{
     case 0:
@@ -63,10 +69,6 @@ int Scanner::showError(unsigned long nErrCode, std::string output)
     case FTR_ERROR_EMPTY_FRAME:	// ERROR_EMPTY
         std::cout << "- Empty frame -\n";
         break;
-    case FTR_ERROR_MOVABLE_FINGER:
-		if (debug > 0)
-        	std::cout << "- Movable finger -\n";	
-        return ScanImage(output);
     case FTR_ERROR_NO_FRAME:
         std::cout <<  "- No frame -\n";
         break;
