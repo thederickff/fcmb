@@ -1,36 +1,34 @@
 #include <iostream>
-#include <fstream>
+#include <sstream>
 
-#include "Scanner.h"
-#include "Cwsq.h"
-#include "Mindtct.h"
-#include "Util.h"
-
-int debug = 0;
-
-int main(int argc, char *argv[])
+bool isInvalid(const std::string &directory)
 {
-	if (argc < 3) {
-		std::cerr << "Usage:" << std::endl;
-		std::cerr << argv[0] << " [directory] [name]\n" << std::endl;
-		return 1;
-	}
+  return directory[directory.size()-1] != '/';
+}
 
-	std::string directory = argv[1];
-	directory += std::string("\\");
-	std::string name = argv[2];
-	std::string bmp_ext = ".bmp";
-	// Scan finger and generates a bitmap
-	Scanner scanner;
-	if(scanner.ScanImage(directory + name + bmp_ext) != 0) return -1;
-	// Compress bitmap file to WSQ
-	Cwsq cwsq(directory + name + bmp_ext);
-	cwsq.Execute();
-	// Generate fingerprint caracteristics (.xyt file)
-	Mindtct mindtct(directory + name);
-	mindtct.Execute();
+int main(int argc, const char *argv[])
+{
+  if (argc != 3)
+  {
+      std::cout << "usage: progName <directory> <name> " << std::endl;
+      return 1;
+  }
 
-	Util::MoveBinary((directory + name + bmp_ext).c_str(), (directory + std::string("bmp\\") + name + bmp_ext).c_str());
+  std::string directory = argv[1];
+  std::string name = argv[2];
 
-	return 0;
+  if (isInvalid(directory)) {
+    std::cout << "Could not identify directory, check if it's missing the '/' character!" << std::endl;
+    return 2;
+  }
+
+  std::ostringstream oss;
+  oss << directory << name << ".bmp";
+  std::string filename = oss.str();
+
+
+
+  std::cout << filename << std::endl;
+
+  return 0;
 }
