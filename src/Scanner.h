@@ -2,7 +2,7 @@
 #define __Fcmb__Scanner__
 
 #include <iostream>
-//#include <ftrScanApi.h>
+#include <ftrScanAPI.h>
 
 struct BitmapInfoHeader {
   int width;
@@ -54,45 +54,7 @@ private:
   void *m_Device;
   std::string m_Output;
   unsigned char *m_Buffer;
-  //FTRSCAN_IMAGE_SIZE m_ImageSize;
+  FTRSCAN_IMAGE_SIZE m_ImageSize;
 };
-
-/*
-typedef struct tagBITMAPINFOHEADER {
-    unsigned int 		biSize;
-    int					biWidth;
-    int					biHeight;
-    unsigned short int 	biPlanes;
-    unsigned short int 	biBitCount;
-    unsigned int 		biCompression;
-    unsigned int 		biSizeImage;
-    int					biXPelsPerMeter;
-    int					biYPelsPerMeter;
-    unsigned int 		biClrUsed;
-    unsigned int 		biClrImportant;
-} BITMAPINFOHEADER, *PBITMAPINFOHEADER;
-
-
-typedef struct tagRGBQUAD {
-   	unsigned char rgbBlue;
-   	unsigned char rgbGreen;
-   	unsigned char rgbRed;
-   	unsigned char rgbReserved;
-} RGBQUAD;
-
-typedef struct tagBITMAPINFO {
-   	BITMAPINFOHEADER 	bmiHeader;
-   	RGBQUAD 			bmiColors[1];
-} BITMAPINFO, *PBITMAPINFO;
-
-
-typedef struct tagBITMAPFILEHEADER {
-   	unsigned short int 	bfType;
-   	unsigned int 		bfSize;
-   	unsigned short int 	bfReserved1;
-   	unsigned short int 	bfReserved2;
-   	unsigned int 		bfOffBits;
-} BITMAPFILEHEADER, *PBITMAPFILEHEADER;
-*/
 
 #endif /* defined(__Fcmb__Scanner__) */

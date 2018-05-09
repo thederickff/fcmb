@@ -18,7 +18,7 @@ int main(int argc, const char *argv[])
   std::string name = argv[2];
 
   if (isInvalid(directory)) {
-    std::cout << "Could not identify directory, check if it's missing the '/' character!" << std::endl;
+    std::cout << "Invalid directory name given!" << std::endl;
     return 2;
   }
 
@@ -26,7 +26,7 @@ int main(int argc, const char *argv[])
   oss << directory << name << ".bmp";
   std::string filename = oss.str();
 
-
+  
 
   std::cout << filename << std::endl;
 

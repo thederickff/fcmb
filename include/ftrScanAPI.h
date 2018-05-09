@@ -1,3 +1,12 @@
+/*
+
+Copyright (c) 2003-2008 Futronic Technology Company Ltd. All rights reserved.
+
+Abstract:
+
+Definitions and prototypes for the Futronic Scanner API.
+
+*/
 #ifndef __FUTRONIC_SCAN_API_H__
 #define __FUTRONIC_SCAN_API_H__
 
@@ -11,7 +20,7 @@
 #elif defined( unix ) || defined( __unix__ ) || defined( __sun ) || defined( __APPLE__ )
 #  define FTR_OS_UNIX
 #elif defined( VAX )
-#  define FTR_OS_VAX 
+#  define FTR_OS_VAX
 #else
 #  error Cannot determine target OS - contact your vendor for support
 #endif
@@ -186,7 +195,7 @@ byDeviceCompatibility:
         6 - USB 2.0 device (FS90 compatible - PAS202)
 */
 
-typedef struct FTR_PACKED __FTRSCAN_DEVICE_INFO 
+typedef struct FTR_PACKED __FTRSCAN_DEVICE_INFO
 {
         FTR_DWORD                           dwStructSize; /* [in, out] */
         FTR_BYTE                            byDeviceCompatibility;
@@ -260,10 +269,10 @@ typedef struct FTR_PACKED __FTRSCAN_INTERFACES_LIST
 
 typedef struct FTR_PACKED __FTRSCAN_VERSION
 {
-        FTR_WORD                            wMajorVersionHi; 
-        FTR_WORD                            wMajorVersionLo; 
-        FTR_WORD                            wMinorVersionHi; 
-        FTR_WORD                            wMinorVersionLo; 
+        FTR_WORD                            wMajorVersionHi;
+        FTR_WORD                            wMajorVersionLo;
+        FTR_WORD                            wMinorVersionHi;
+        FTR_WORD                            wMinorVersionLo;
 } FTRSCAN_VERSION, *PFTRSCAN_VERSION;
 
 typedef struct FTR_PACKED __FTRSCAN_VERSION_INFO
