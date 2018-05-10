@@ -1,56 +1,40 @@
 #include "Scanner.h"
 
-#include <ftrScanAPI.h>
+#include <cstring>
 
 Scanner::Scanner(const std::string&output)
 : m_Output(output)
-{
-
-}
-
-Scanner::~Scanner()
-{
-  ftrScanCloseDevice(m_Device);
-}
-
-Scanner::Scanner(const Scanner& scanner)
-: m_Output(scanner.m_Output)
-{
-
-}
-
-Scanner& Scanner::operator=(const Scanner& scanner)
-{
-  if (&scanner != this)
-  {
-    this->m_Output = scanner.m_Output;
-    //this->m_ImageSize = scanner.m_ImageSize;
-  }
-  return *this;
-}
-
-int Scanner::ScanImage()
 {
   m_Device = ftrScanOpenDevice();
 
 	if(m_Device == NULL)
 	{
-		std::cout << "Failed to open device!" << std::endl;
-		return -1;
+    throw ScannerException("Failed to open device!");
 	}
+}
+
+Scanner::~Scanner()
+{
+  std::cout << "Device closed!" << std::endl;
+  free(m_Buffer);
+  ftrScanCloseDevice(m_Device);
+}
+
+int Scanner::ScanImage()
+{
 
 	if(!ftrScanGetImageSize(m_Device, &m_ImageSize))
 	{
-		std::cout << "Failed to get image size\n";
-		ftrScanCloseDevice(m_Device);
-		return -1;
+    throw ScannerException("Failed to get image size");
 	}
 
 	//if (debug > 0)
 	std::cout << "Image size is " << m_ImageSize.nImageSize << "\n";
 
 	m_Buffer = (unsigned char *) malloc(m_ImageSize.nImageSize);
+
 	std::cout << "Please put your finger on the scanner: " << std::endl;
+
 	while(true)
 	{
 		if(ftrScanIsFingerPresent(m_Device, NULL)) break;
@@ -59,6 +43,7 @@ int Scanner::ScanImage()
 
 	//if (debug > 0)
 	std::cout << "Capturing fingerprint ......\n";
+
   if(ftrScanGetFrame(m_Device, m_Buffer, NULL))
 	{
 		//if (debug > 0)
@@ -66,25 +51,25 @@ int Scanner::ScanImage()
 
 		WriteBmpFile(m_Buffer, m_ImageSize.nWidth, m_ImageSize.nHeight, m_Output.c_str());
 	} else {
-		free(m_Buffer);
-		ftrScanCloseDevice(m_Device);
-		return ShowError(ftrScanGetLastError());
+    unsigned long error = ftrScanGetLastError();
+    if (error == FTR_ERROR_MOVABLE_FINGER) {
+      return ScanImage();
+    } else {
+      return ShowError(error);
+    }
 	}
-
-	free(m_pBuffer);
-	ftrScanCloseDevice(m_Device);
 
 	return 0;
 }
-int Scanner::ShowError(unsigned long errCode)
+int Scanner::ShowError(unsigned long error)
 {
   // in case of moveable finger there is a way to try again
-	if (nErrCode == FTR_ERROR_MOVABLE_FINGER) {
+	if (error == FTR_ERROR_MOVABLE_FINGER) {
     return ScanImage();
 	}
 
 	std::cout << "Failed to get image:\n";
-  switch(errCode)
+  switch(error)
   {
     case 0:
         std::cout << "OK";
@@ -108,15 +93,16 @@ int Scanner::ShowError(unsigned long errCode)
         std::cout << "- Invalid authorization code -\n";
         break;
     default:
-        std::cout << "Unknown return code - " << errCode << "\n";
+        std::cout << "Unknown return code - " << error << "\n";
   }
+
   return -1;
 }
 
 int Scanner::WriteBmpFile(unsigned char *image, int width, int height, const char *filename)
 {
   BitmapInfo *pDIBHeader;
-	BitmapFileHeader  bmfHeader;
+	BitmapFileHeader bmfHeader;
 	int iCyc;
 	// allocate memory for a DIB header
 	if((pDIBHeader = (BitmapInfo *) malloc(sizeof(BitmapInfo) + sizeof(RGBQuad) * 255)) == NULL)
@@ -135,7 +121,7 @@ int Scanner::WriteBmpFile(unsigned char *image, int width, int height, const cha
 	// initialize logical and DIB grayscale
 	for(iCyc = 0; iCyc < 256; iCyc++)
 	{
-		pDIBHeader->colors[iCyc].rgbBlue = pDIBHeader->colors[iCyc].rgbGreen = pDIBHeader->colors[iCyc].rgbRed = (unsigned char) iCyc;
+		pDIBHeader->colors[iCyc].blue = pDIBHeader->colors[iCyc].green = pDIBHeader->colors[iCyc].red = (unsigned char) iCyc;
 	}
 	// set BitmapFileHeader structure
 	bmfHeader.type = 0x42 + 0x4D * 0x100;
@@ -170,10 +156,10 @@ int Scanner::WriteBmpFile(unsigned char *image, int width, int height, const cha
 	fwrite((void *) &pDIBHeader->header.clrImportant, sizeof(unsigned int), 1, fp);
 	for( iCyc=0; iCyc<256; iCyc++ )
 	{
-		fwrite((void *) &pDIBHeader->colors[iCyc].rgbBlue, sizeof(unsigned char), 1, fp);
-		fwrite((void *) &pDIBHeader->colors[iCyc].rgbGreen, sizeof(unsigned char), 1, fp);
-		fwrite((void *) &pDIBHeader->colors[iCyc].rgbRed, sizeof(unsigned char), 1, fp );
-		fwrite((void *) &pDIBHeader->colors[iCyc].rgbReserved, sizeof(unsigned char), 1, fp);
+		fwrite((void *) &pDIBHeader->colors[iCyc].blue, sizeof(unsigned char), 1, fp);
+		fwrite((void *) &pDIBHeader->colors[iCyc].green, sizeof(unsigned char), 1, fp);
+		fwrite((void *) &pDIBHeader->colors[iCyc].red, sizeof(unsigned char), 1, fp );
+		fwrite((void *) &pDIBHeader->colors[iCyc].reserved, sizeof(unsigned char), 1, fp);
 	}
    	/////////////////////////// copy fingerprint image /////////////////////////////////////
 	unsigned char *cptrData;
@@ -183,7 +169,7 @@ int Scanner::WriteBmpFile(unsigned char *image, int width, int height, const cha
 	pDIBData = (unsigned char *) malloc(height * width);
 	memset((void *) pDIBData, 0, height * width);
 
-	cptrData = pImage + (height - 1) * width;
+	cptrData = image + (height - 1) * width;
 	cptrDIBData = pDIBData;
 	for(iCyc = 0; iCyc < height; iCyc++)
 	{
@@ -198,6 +184,7 @@ int Scanner::WriteBmpFile(unsigned char *image, int width, int height, const cha
 
 	free(pDIBData);
 	free(pDIBHeader);
+
 	return 0;
 }
 

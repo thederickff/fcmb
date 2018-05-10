@@ -38,16 +38,26 @@ struct BitmapFileHeader {
   unsigned short int reserved2;
 };
 
+class ScannerException {
+public:
+  ScannerException(const std::string& message)
+  : m_message(message)  { }
+
+  std::string what() const { return m_message; }
+private:
+  std::string m_message;
+};
+
 class Scanner {
 public:
-  Scanner(const std::string &output);
-  Scanner(const Scanner &scanner);
-  Scanner &operator=(const Scanner &scanner);
+  Scanner(const std::string& output);
+  Scanner(const Scanner& scanner) = delete;
+  Scanner& operator=(const Scanner& scanner) = delete;
   ~Scanner();
 
   int ScanImage();
 private:
-  int ShowError(unsigned long errCode);
+  int ShowError(unsigned long error);
   int WriteBmpFile(unsigned char *image, int width, int height, const char *filename);
 private:
 

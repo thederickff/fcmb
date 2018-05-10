@@ -1,7 +1,9 @@
 #include <iostream>
 #include <sstream>
 
-bool isInvalid(const std::string &directory)
+#include "Scanner.h"
+
+bool isInvalid(const std::string& directory)
 {
   return directory[directory.size()-1] != '/';
 }
@@ -26,9 +28,17 @@ int main(int argc, const char *argv[])
   oss << directory << name << ".bmp";
   std::string filename = oss.str();
 
-  
-
   std::cout << filename << std::endl;
+
+  try
+  {
+      Scanner scanner("not connected");
+      scanner.ScanImage();
+  }
+  catch (const ScannerException& e)
+  {
+    std::cout << e.what() << std::endl;
+  }
 
   return 0;
 }
