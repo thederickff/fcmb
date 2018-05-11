@@ -22,8 +22,11 @@
 * SOFTWARE.
 */
 #include "Scanner.h"
+#include "Utils.h"
 
 #include <cstring>
+#include <chrono>
+#include <thread>
 
 Scanner::Scanner(const std::string& output)
 : m_Output(output)
@@ -39,8 +42,9 @@ Scanner::Scanner(const std::string& output)
 Scanner::~Scanner()
 {
   std::cout << "Device closed!" << std::endl;
-  free(m_Buffer);
-  ftrScanCloseDevice(m_Device);
+  //free(m_Buffer);
+  if (m_Device != NULL) ftrScanCloseDevice(m_Device);
+  //else LOG("Device is null")//free(m_Buffer);
 }
 
 int Scanner::ScanImage()
@@ -52,7 +56,8 @@ int Scanner::ScanImage()
   }
 
   //if (debug > 0)
-  std::cout << "Image size is " << m_ImageSize.nImageSize << "\n";
+  //std::cout << "Image size is " << m_ImageSize.nImageSize << "\n";
+  LOG("Image size caught")
 
   m_Buffer = (unsigned char *) malloc(m_ImageSize.nImageSize);
 
@@ -60,32 +65,29 @@ int Scanner::ScanImage()
 
   while(true)
   {
-    if(ftrScanIsFingerPresent(m_Device, NULL)) break;
-    for(int i=0; i<50; i++);	//sleep(1)
-  }
-  /*
-  while(true)
-  {
     ftrScanSetDiodesStatus(m_Device, (unsigned int)100/2, 0); // green led ON, red led OFF
     if(ftrScanIsFingerPresent(m_Device, NULL)) break;
-    //for(i=0; i<100; i++);	//sleep
-    usleep(500);
-  }*/
+    // sleep
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
 
-  //if (debug > 0)
-  std::cout << "Capturing fingerprint ......\n";
+  LOG("Capturing fingerprint...")
 
   if(ftrScanGetFrame(m_Device, m_Buffer, NULL))
   {
-    //if (debug > 0)
-    std::cout << "Done!\nWriting to file......\n";
+    LOG("Done\nWriting to file...")
 
     WriteBmpFile(m_Buffer, m_ImageSize.nWidth, m_ImageSize.nHeight, m_Output.c_str());
+    //write_bmp_file(m_Buffer, m_ImageSize.nWidth, m_ImageSize.nHeight, m_Output.c_str());
   } else {
     unsigned long error = ftrScanGetLastError();
-    if (error == FTR_ERROR_MOVABLE_FINGER) {
+    if (error == FTR_ERROR_MOVABLE_FINGER)
+    {
+      LOG("Trying again")
       return ScanImage();
-    } else {
+    }
+    else
+    {
       return ShowError(error);
     }
   }
@@ -95,7 +97,7 @@ int Scanner::ScanImage()
 int Scanner::ShowError(unsigned long error)
 {
   // in case of moveable finger there is a way to try again
-  if (  error == FTR_ERROR_MOVABLE_FINGER) {
+  if (error == FTR_ERROR_MOVABLE_FINGER) {
     return ScanImage();
   }
 
@@ -132,67 +134,67 @@ int Scanner::ShowError(unsigned long error)
 
 int Scanner::WriteBmpFile(unsigned char *image, int width, int height, const char *filename)
 {
-  BitmapInfo *bmInfo;
-  BitmapFileHeader bmfHeader;
+  BitmapInfo *bitmapInfo;
+  BitmapFileHeader  bmfHeader;
   int iCyc;
   // allocate memory for a DIB header
-  if((bmInfo = (BitmapInfo *) malloc(sizeof(BitmapInfo) + sizeof(RGBQuad) * 255)) == NULL)
+  if((bitmapInfo = (BitmapInfo *) malloc(sizeof(BitmapInfo) + sizeof(RGBQuad) * 255)) == NULL)
   {
     std::cout << "Alloc memory failed! - Unable to write to file!!\n";
     return -1;
   }
-  memset((void *) bmInfo, 0, sizeof(BitmapInfo) + sizeof(RGBQuad) * 255);
+  memset((void *) bitmapInfo, 0, sizeof(BitmapInfo) + sizeof(RGBQuad) * 255);
   // fill the DIB header
-  bmInfo->header.size          = sizeof(BitmapInfoHeader);
-  bmInfo->header.width         = width;
-  bmInfo->header.height        = height;
-  bmInfo->header.planes        = 1;
-  bmInfo->header.bitCount      = 8;		// 8bits gray scale bmp
-  bmInfo->header.compression   = 0;		// BI_RGB = 0;
+  bitmapInfo->bmiHeader.biSize          = sizeof(BitmapInfoHeader);
+  bitmapInfo->bmiHeader.biWidth         = width;
+  bitmapInfo->bmiHeader.biHeight        = height;
+  bitmapInfo->bmiHeader.biPlanes        = 1;
+  bitmapInfo->bmiHeader.biBitCount      = 8;		// 8bits gray scale bmp
+  bitmapInfo->bmiHeader.biCompression   = 0;		// BI_RGB = 0;
   // initialize logical and DIB grayscale
   for(iCyc = 0; iCyc < 256; iCyc++)
   {
-    bmInfo->colors[iCyc].blue = bmInfo->colors[iCyc].green = bmInfo->colors[iCyc].red = (unsigned char) iCyc;
+    bitmapInfo->bmiColors[iCyc].rgbBlue = bitmapInfo->bmiColors[iCyc].rgbGreen = bitmapInfo->bmiColors[iCyc].rgbRed = (unsigned char) iCyc;
   }
   // set BitmapFileHeader structure
-  bmfHeader.type = 0x42 + 0x4D * 0x100;
-  bmfHeader.size = 14 + sizeof(BitmapInfo) + sizeof(RGBQuad) * 255 + width * height;	//sizeof(BitmapFileHeader) = 14
-  bmfHeader.offBits = 14 + bmInfo->header.size + sizeof(RGBQuad) * 256;
+  bmfHeader.bfType = 0x42 + 0x4D * 0x100;
+  bmfHeader.bfSize = 14 + sizeof(BitmapInfo) + sizeof(RGBQuad) * 255 + width * height;	//sizeof(BitmapFileHeader) = 14
+  bmfHeader.bfOffBits = 14 + bitmapInfo->bmiHeader.biSize + sizeof(RGBQuad) * 256;
   //write to file
   FILE *fp;
   fp = fopen(filename, "wb");
   if(fp == NULL)
   {
     std::cout << "Failed to write to file\n";
-    free(bmInfo);
+    free(bitmapInfo);
     return -1;
   }
   //fwrite((void *) &bmfHeader, 1, sizeof(BitmapFileHeader), fp);
-  fwrite((void *) &bmfHeader.type, sizeof(unsigned short int), 1, fp);
-  fwrite((void *) &bmfHeader.size, sizeof(unsigned int), 1, fp);
-  fwrite((void *) &bmfHeader.reserved1, sizeof(unsigned short int), 1, fp);
-  fwrite((void *) &bmfHeader.reserved2, sizeof(unsigned short int), 1, fp);
-  fwrite((void *) &bmfHeader.offBits, sizeof(unsigned int), 1, fp);
-  //fwrite((void *) bmInfo, 1, sizeof( BitmapInfo ) + sizeof( RGBQuad ) * 255, fp);
-  fwrite((void *) &bmInfo->header.size, sizeof(unsigned int), 1, fp);
-  fwrite((void *) &bmInfo->header.width, sizeof(int), 1, fp);
-  fwrite((void *) &bmInfo->header.height, sizeof(int), 1, fp);
-  fwrite((void *) &bmInfo->header.planes, sizeof(unsigned short int), 1, fp);
-  fwrite((void *) &bmInfo->header.bitCount, sizeof(unsigned short int), 1, fp);
-  fwrite((void *) &bmInfo->header.compression, sizeof(unsigned int), 1, fp);
-  fwrite((void *) &bmInfo->header.sizeImage, sizeof(unsigned int), 1, fp);
-  fwrite((void *) &bmInfo->header.xPelsPerMeter, sizeof(int), 1, fp);
-  fwrite((void *) &bmInfo->header.yPelsPerMeter, sizeof(int), 1, fp);
-  fwrite((void *) &bmInfo->header.clrUsed, sizeof(unsigned int), 1, fp);
-  fwrite((void *) &bmInfo->header.clrImportant, sizeof(unsigned int), 1, fp);
+  fwrite((void *) &bmfHeader.bfType, sizeof(unsigned short int), 1, fp);
+  fwrite((void *) &bmfHeader.bfSize, sizeof(unsigned int), 1, fp);
+  fwrite((void *) &bmfHeader.bfReserved1, sizeof(unsigned short int), 1, fp);
+  fwrite((void *) &bmfHeader.bfReserved2, sizeof(unsigned short int), 1, fp);
+  fwrite((void *) &bmfHeader.bfOffBits, sizeof(unsigned int), 1, fp);
+  //fwrite((void *) bitmapInfo, 1, sizeof( BitmapInfo ) + sizeof( RGBQuad ) * 255, fp);
+  fwrite((void *) &bitmapInfo->bmiHeader.biSize, sizeof(unsigned int), 1, fp);
+  fwrite((void *) &bitmapInfo->bmiHeader.biWidth, sizeof(int), 1, fp);
+  fwrite((void *) &bitmapInfo->bmiHeader.biHeight, sizeof(int), 1, fp);
+  fwrite((void *) &bitmapInfo->bmiHeader.biPlanes, sizeof(unsigned short int), 1, fp);
+  fwrite((void *) &bitmapInfo->bmiHeader.biBitCount, sizeof(unsigned short int), 1, fp);
+  fwrite((void *) &bitmapInfo->bmiHeader.biCompression, sizeof(unsigned int), 1, fp);
+  fwrite((void *) &bitmapInfo->bmiHeader.biSizeImage, sizeof(unsigned int), 1, fp);
+  fwrite((void *) &bitmapInfo->bmiHeader.biXPelsPerMeter, sizeof(int), 1, fp);
+  fwrite((void *) &bitmapInfo->bmiHeader.biYPelsPerMeter, sizeof(int), 1, fp);
+  fwrite((void *) &bitmapInfo->bmiHeader.biClrUsed, sizeof(unsigned int), 1, fp);
+  fwrite((void *) &bitmapInfo->bmiHeader.biClrImportant, sizeof(unsigned int), 1, fp);
   for( iCyc=0; iCyc<256; iCyc++ )
   {
-    fwrite((void *) &bmInfo->colors[iCyc].blue, sizeof(unsigned char), 1, fp);
-    fwrite((void *) &bmInfo->colors[iCyc].green, sizeof(unsigned char), 1, fp);
-    fwrite((void *) &bmInfo->colors[iCyc].red, sizeof(unsigned char), 1, fp );
-    fwrite((void *) &bmInfo->colors[iCyc].reserved, sizeof(unsigned char), 1, fp);
+    fwrite((void *) &bitmapInfo->bmiColors[iCyc].rgbBlue, sizeof(unsigned char), 1, fp);
+    fwrite((void *) &bitmapInfo->bmiColors[iCyc].rgbGreen, sizeof(unsigned char), 1, fp);
+    fwrite((void *) &bitmapInfo->bmiColors[iCyc].rgbRed, sizeof(unsigned char), 1, fp );
+    fwrite((void *) &bitmapInfo->bmiColors[iCyc].rgbReserved, sizeof(unsigned char), 1, fp);
   }
-  /////////////////////////// copy fingerprint image /////////////////////////////////////
+    /////////////////////////// copy fingerprint image /////////////////////////////////////
   unsigned char *cptrData;
   unsigned char *cptrDIBData;
   unsigned char *pDIBData;
@@ -200,7 +202,7 @@ int Scanner::WriteBmpFile(unsigned char *image, int width, int height, const cha
   pDIBData = (unsigned char *) malloc(height * width);
   memset((void *) pDIBData, 0, height * width);
 
-  cptrData = image + (height - 1) * width;
+  cptrData = m_Buffer + (height - 1) * width;
   cptrDIBData = pDIBData;
   for(iCyc = 0; iCyc < height; iCyc++)
   {
@@ -214,7 +216,7 @@ int Scanner::WriteBmpFile(unsigned char *image, int width, int height, const cha
   std::cout << "Fingerprint image is written to file: " << filename << ".\n";
 
   free(pDIBData);
-  free(bmInfo);
+  free(bitmapInfo);
 
   return 0;
 }

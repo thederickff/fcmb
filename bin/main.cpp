@@ -24,6 +24,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "Utils.h"
 #include "Scanner.h"
 
 bool isInvalid(const std::string& directory)
@@ -55,7 +56,7 @@ int main(int argc, const char *argv[])
 
   try
   {
-      Scanner scanner("not connected");
+      Scanner scanner(filename);
       scanner.ScanImage();
   }
   catch (const ScannerException& e)

@@ -28,37 +28,37 @@
 #include <ftrScanAPI.h>
 
 struct BitmapInfoHeader {
-  int width;
-  int height;
-  int xPelsPerMeter;
-  int yPelsPerMeter;
-  unsigned int size;
-  unsigned int compression;
-  unsigned int sizeImage;
-  unsigned int clrUsed;
-  unsigned int clrImportant;
-  unsigned short int planes;
-  unsigned short int bitCount;
+  unsigned long int	biSize;
+  long int			biWidth;
+  long int			biHeight;
+  unsigned short int  biPlanes;
+  unsigned short int	biBitCount;
+  unsigned long int	biCompression;
+  unsigned long int	biSizeImage;
+  long int			biXPelsPerMeter;
+  long int			biYPelsPerMeter;
+  unsigned long int   biClrUsed;
+  unsigned long int	biClrImportant;
 };
 
 struct RGBQuad {
-  unsigned char red;
-  unsigned char green;
-  unsigned char blue;
-  unsigned char reserved;
+  unsigned char	rgbBlue;
+  unsigned char	rgbGreen;
+  unsigned char	rgbRed;
+  unsigned char	rgbReserved;
 };
 
 struct BitmapInfo {
-  BitmapInfoHeader header;
-  RGBQuad colors[1];
+  BitmapInfoHeader    bmiHeader;
+  RGBQuad             bmiColors[1];
 };
 
 struct BitmapFileHeader {
-  unsigned int size;
-  unsigned short int type;
-  unsigned short int offBits;
-  unsigned short int reserved1;
-  unsigned short int reserved2;
+  unsigned short int	bfType;
+  unsigned long int	bfSize;
+  unsigned short int	bfReserved1;
+  unsigned short int	bfReserved2;
+  unsigned long int	bfOffBits;
 };
 
 class ScannerException {
@@ -83,7 +83,6 @@ private:
   int ShowError(unsigned long error);
   int WriteBmpFile(unsigned char *image, int width, int height, const char *filename);
 private:
-
   void *m_Device;
   std::string m_Output;
   unsigned char *m_Buffer;
