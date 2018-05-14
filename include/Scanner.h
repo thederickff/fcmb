@@ -28,37 +28,37 @@
 #include <ftrScanAPI.h>
 
 struct BitmapInfoHeader {
-  unsigned long int	biSize;
-  long int			biWidth;
-  long int			biHeight;
-  unsigned short int  biPlanes;
-  unsigned short int	biBitCount;
-  unsigned long int	biCompression;
-  unsigned long int	biSizeImage;
-  long int			biXPelsPerMeter;
-  long int			biYPelsPerMeter;
-  unsigned long int   biClrUsed;
-  unsigned long int	biClrImportant;
+  unsigned long int	size;
+  long int width;
+  long int height;
+  unsigned short int planes;
+  unsigned short int bitCount;
+  unsigned long int compression;
+  unsigned long int sizeImage;
+  long int xPelsPerMeter;
+  long int yPelsPerMeter;
+  unsigned long int clrUsed;
+  unsigned long int	clrImportant;
 };
 
 struct RGBQuad {
-  unsigned char	rgbBlue;
-  unsigned char	rgbGreen;
-  unsigned char	rgbRed;
-  unsigned char	rgbReserved;
+  unsigned char blue;
+  unsigned char green;
+  unsigned char red;
+  unsigned char reserved;
 };
 
 struct BitmapInfo {
-  BitmapInfoHeader    bmiHeader;
-  RGBQuad             bmiColors[1];
+  BitmapInfoHeader header;
+  RGBQuad colors[1];
 };
 
 struct BitmapFileHeader {
-  unsigned short int	bfType;
-  unsigned long int	bfSize;
-  unsigned short int	bfReserved1;
-  unsigned short int	bfReserved2;
-  unsigned long int	bfOffBits;
+  unsigned long int size;
+  unsigned short int type;
+  unsigned short int reserved1;
+  unsigned short int reserved2;
+  unsigned long int offBits;
 };
 
 class ScannerException {
@@ -78,10 +78,10 @@ public:
   Scanner& operator=(const Scanner& scanner) = delete;
   ~Scanner();
 
-  int ScanImage();
+  void ScanImage();
 private:
-  int ShowError(unsigned long error);
-  int WriteBmpFile(unsigned char *image, int width, int height, const char *filename);
+  void ShowError(unsigned long error);
+  void WriteBmpFile(int width, int height);
 private:
   void *m_Device;
   std::string m_Output;
