@@ -21,52 +21,23 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+#ifndef __Fcmb__Cwsq__
+#define __Fcmb__Cwsq__
+
 #include <iostream>
 #include <sstream>
 
-#include "Utils.h"
-#include "Scanner.h"
-#include "Cwsq.h"
-
-bool isInvalid(const std::string& directory)
+class Cwsq
 {
-  return directory[directory.size()-1] != '/';
-}
+public:
+  Cwsq(const std::string& image_path);
+  Cwsq(const Cwsq& scanner) = delete;
+  Cwsq& operator=(const Cwsq& scanner) = delete;
+  ~Cwsq();
 
-int main(int argc, const char *argv[])
-{
-  if (argc != 3)
-  {
-      std::cout << "usage: " << argv[0] << " <directory> <name> " << std::endl;
-      return 1;
-  }
+  void execute();
+private:
+  std::ostringstream m_Command;
+};
 
-  std::string directory = argv[1];
-  std::string name = argv[2];
-
-  if (isInvalid(directory)) {
-    std::cout << "Invalid directory name given!" << std::endl;
-    return 2;
-  }
-
-  std::ostringstream oss;
-  oss << directory << name << ".bmp";
-  std::string filename = oss.str();
-
-  std::cout << filename << std::endl;
-
-  try
-  {
-      Scanner scanner(filename);
-      scanner.ScanImage();
-
-      Cwsq cwsq(filename);
-      cwsq.execute();
-  }
-  catch (const ScannerException& e)
-  {
-    std::cout << e.what() << std::endl;
-  }
-
-  return 0;
-}
+#endif /* defined(__Fcmb__Cwsq__) */

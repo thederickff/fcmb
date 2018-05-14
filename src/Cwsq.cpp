@@ -21,52 +21,22 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include <iostream>
-#include <sstream>
-
-#include "Utils.h"
-#include "Scanner.h"
 #include "Cwsq.h"
+#include "Utils.h"
 
-bool isInvalid(const std::string& directory)
+Cwsq::Cwsq(const std::string& image_path)
 {
-  return directory[directory.size()-1] != '/';
+  m_Command << "exec/cwsq 2.25 wsq " << image_path << " -raw_in 320,480,8";
 }
 
-int main(int argc, const char *argv[])
+Cwsq::~Cwsq()
 {
-  if (argc != 3)
-  {
-      std::cout << "usage: " << argv[0] << " <directory> <name> " << std::endl;
-      return 1;
-  }
 
-  std::string directory = argv[1];
-  std::string name = argv[2];
+}
 
-  if (isInvalid(directory)) {
-    std::cout << "Invalid directory name given!" << std::endl;
-    return 2;
-  }
-
-  std::ostringstream oss;
-  oss << directory << name << ".bmp";
-  std::string filename = oss.str();
-
-  std::cout << filename << std::endl;
-
-  try
-  {
-      Scanner scanner(filename);
-      scanner.ScanImage();
-
-      Cwsq cwsq(filename);
-      cwsq.execute();
-  }
-  catch (const ScannerException& e)
-  {
-    std::cout << e.what() << std::endl;
-  }
-
-  return 0;
+void Cwsq::execute()
+{
+  LOG("Executing Cwsq")
+  system(m_Command.str().c_str());
+  LOG("Done!")
 }
