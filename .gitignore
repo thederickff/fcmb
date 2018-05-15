@@ -12,8 +12,8 @@
 *.pch
 
 # Compiled Dynamic libraries
-*.so
 *.dylib
+#*.so
 #*.dll
 
 # Fortran module files
@@ -32,6 +32,10 @@
 *.app
 /dist/
 /build/
+/exec/
+
+# Program name
+fcmb
 
 # Other files
 /.vscode/

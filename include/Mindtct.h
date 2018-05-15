@@ -21,30 +21,24 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include "Mindtct.h"
-#include "Utils.h"
+#ifndef __Fcmb__Mindtct__
+#define __Fcmb__Mindtct__
 
-Mindtct::Mindtct(const std::string& name)
-: m_Name(name)
-{
-  m_Command << "exec/mindtct " << name << ".wsq " << name;
-}
+#include <iostream>
+#include <sstream>
 
-Mindtct::~Mindtct()
+class Mindtct
 {
-  std::string extensions[] = {".brw", ".dm", ".hcm", ".lcm", ".lfm", ".min", ".qm", ".wsq"};
-  int size = sizeof(extensions) / sizeof(std::string);
-  LOG("Cleaning up files")
-  for (int i = 0; i < size; ++i)
-  {
-    remove((m_Name + extensions[i]).c_str());
-  }
-  LOG("Done!")
-}
+public:
+  Mindtct(const std::string& name);
+  Mindtct(const Mindtct& mindtct) = delete;
+  Mindtct& operator=(const Mindtct& mindtct) = delete;
+  ~Mindtct();
 
-void Mindtct::Execute()
-{
-  LOG("Executing Mindtct")
-  system(m_Command.str().c_str());
-  LOG("Done!")
-}
+  void Execute();
+private:
+  std::ostringstream m_Command;
+  std::string m_Name;
+};
+
+#endif /* defined(__Fcmb__Mindtct__)*/

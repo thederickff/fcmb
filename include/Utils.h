@@ -21,30 +21,33 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include "Mindtct.h"
-#include "Utils.h"
+#ifndef __Fcmb__Utils__
+#define __Fcmb__Utils__
 
-Mindtct::Mindtct(const std::string& name)
-: m_Name(name)
-{
-  m_Command << "exec/mindtct " << name << ".wsq " << name;
-}
+#define DEBUG 1
 
-Mindtct::~Mindtct()
-{
-  std::string extensions[] = {".brw", ".dm", ".hcm", ".lcm", ".lfm", ".min", ".qm", ".wsq"};
-  int size = sizeof(extensions) / sizeof(std::string);
-  LOG("Cleaning up files")
-  for (int i = 0; i < size; ++i)
+#if DEBUG
+  #define LOG(x) std::cout << x << std::endl;
+#else
+  #define LOG(x)
+#endif
+
+#include <fstream>
+
+namespace Fcmb {
+
+  inline bool FileExists(const std::string& filename)
   {
-    remove((m_Name + extensions[i]).c_str());
+    return std::fstream(filename, std::ios::binary | std::ios::in).is_open();
   }
-  LOG("Done!")
+
+  inline bool InvalidDir(const std::string& dir)
+  {
+    return dir[dir.size()-1] != '/';
+  }
+
+  void CopyBinary(const std::string& source, const std::string& target);
+  void MoveBinary(const std::string& source, const std::string& target);
 }
 
-void Mindtct::Execute()
-{
-  LOG("Executing Mindtct")
-  system(m_Command.str().c_str());
-  LOG("Done!")
-}
+#endif /* defined(__Fcmb__Scanner__) */

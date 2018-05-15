@@ -1,18 +1,18 @@
 ## Futronic Cwsq Mindtct Bozorth3 (FCMB)
 
-This program was done to facilitate the life of those whom has a futronic device but didn't find a SDK, or is not able to pay $1000 dollars to get one from Futronic company.
+This project was done to make the life easy for those whom has a futronic device but didn't find a free SDK, or isn't able to pay something like $1000 to get one from Futronic company.
 
-This program communicates with a Futronic device, writes the read finger into a bitmap and extracts its minutiae into a .xyt file. 
-You can use the included software **Bozorth3** to calculate minutiaes scores using .xyt files.
+This program communicates with a Futronic device, writes the read finger into a bitmap and extracts its minutiae into a .xyt file.
+You can use the included software **Bozorth3** to calculate minutiae scores using .xyt files.
 
-This project uses three softwares of NIST (National Institute of Standards and Technology), **Cwsq** (compress a bitmap file into a wsq), **Mindtct** (extracts fingerprint minutiae), and **Bozorth3** (Matches fingerprints minutiae).
+This project uses three softwares of NBIS (NIST Biometric Image Software (National Institute of Standards and Technology)), **Cwsq** (compress a bitmap file into a wsq), **Mindtct** (extracts fingerprint minutiae), and **Bozorth3** (Matches fingerprints minutiae).
 
-Currently, it only makes connection with a fs80 scanner, but you can try with others futronics devices, tell me if it works.
+Currently, it only makes connection with fs80 scanners, but you can try with other Futronic's devices, good lucky!
 
 ### Usage
-<code>fcmb [directory] [name]</code><br/>
+<code>fcmb &lt;directory&gt; &lt;name&gt;</code><br/>
 
-It'll request a finger, then a bitmap image (name.bmp) and a minutiae map file (name.xyt) will generated on the directory you informed so you can visualize the finger scanned and use its minutiaes with Bozorth3 according with your needs.
+It'll request a finger, then a bitmap image (name.bmp) and a minutiae map file (name.xyt) will be generated on the directory you informed so that you can visualize the finger scanned and use its minutiae with Bozorth3 according with your needs.
 
 ## Contributing
-This project was not implemented for linux and unix machines yet. So if you do that, please make a pull request.
+Clone the repository, then you gonna need a futronic' scanner, the three programs mentioned above compiled to your platform (See [nbis](https://github.com/lessandro/nbis)), and then you'll be ready for development.

@@ -21,30 +21,31 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include "Mindtct.h"
 #include "Utils.h"
 
-Mindtct::Mindtct(const std::string& name)
-: m_Name(name)
-{
-  m_Command << "exec/mindtct " << name << ".wsq " << name;
-}
+#include <iostream>
+#include <fstream>
 
-Mindtct::~Mindtct()
-{
-  std::string extensions[] = {".brw", ".dm", ".hcm", ".lcm", ".lfm", ".min", ".qm", ".wsq"};
-  int size = sizeof(extensions) / sizeof(std::string);
-  LOG("Cleaning up files")
-  for (int i = 0; i < size; ++i)
+namespace Fcmb {
+  void CopyBinary(const std::string& source, const std::string& target)
   {
-    remove((m_Name + extensions[i]).c_str());
+    LOG("Copying binary")
+    std::ifstream ifs(source, std::ios::binary);
+    if (!ifs) {
+      std::cout << "Failed to open file " << source << " for reading!" << std::endl;
+      return;
+    }
+    std::ofstream ofs(target, std::ios::binary);
+    if (!ofs) {
+      std::cout << "Failed to open file " << target << " for writing!" << std::endl;
+      return;
+    }
+    ofs << ifs.rdbuf();
   }
-  LOG("Done!")
-}
 
-void Mindtct::Execute()
-{
-  LOG("Executing Mindtct")
-  system(m_Command.str().c_str());
-  LOG("Done!")
+  void MoveBinary(const std::string& source, const std::string& target)
+  {
+    CopyBinary(source, target);
+    remove(source.c_str());
+  }
 }

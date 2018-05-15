@@ -1,16 +1,41 @@
+/*
+* MIT License
+*
+* Copyright (c) 2018 Derick Felix <derickfelix@zoho.com>
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #include "Cwsq.h"
+#include "Utils.h"
 
-Cwsq::Cwsq(std::string image)
-    : m_App_name("exec\\cwsq.exe "), m_Output("2.25 wsq "),
-      m_Image(image), m_Image_settings(" -raw_in 320,480,8") { }
+Cwsq::Cwsq(const std::string& image_path)
+{
+  m_Command << "exec/cwsq 2.25 wsq " << image_path << " -raw_in 320,480,8";
+}
+
+Cwsq::~Cwsq()
+{
+}
 
 void Cwsq::Execute()
 {
-    if (debug > 0)
-        std::cout << "Executing Cwsq" << std::endl;
-    std::string command = m_App_name + m_Output + m_Image + m_Image_settings;
-	system(command.c_str());	
-
-    if (debug > 0)
-        std::cout << "Done!" << std::endl;
+  LOG("Executing Cwsq")
+  system(m_Command.str().c_str());
+  LOG("Done!")
 }

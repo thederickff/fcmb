@@ -21,30 +21,56 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+#include <iostream>
+#include <sstream>
+
+#include "Scanner.h"
+#include "Cwsq.h"
 #include "Mindtct.h"
 #include "Utils.h"
 
-Mindtct::Mindtct(const std::string& name)
-: m_Name(name)
+int main(int argc, const char *argv[])
 {
-  m_Command << "exec/mindtct " << name << ".wsq " << name;
-}
-
-Mindtct::~Mindtct()
-{
-  std::string extensions[] = {".brw", ".dm", ".hcm", ".lcm", ".lfm", ".min", ".qm", ".wsq"};
-  int size = sizeof(extensions) / sizeof(std::string);
-  LOG("Cleaning up files")
-  for (int i = 0; i < size; ++i)
+  if (argc != 3)
   {
-    remove((m_Name + extensions[i]).c_str());
+      std::cout << "usage: " << argv[0] << " <directory> <name> " << std::endl;
+      return 1;
   }
-  LOG("Done!")
-}
 
-void Mindtct::Execute()
-{
-  LOG("Executing Mindtct")
-  system(m_Command.str().c_str());
-  LOG("Done!")
+  std::string directory = argv[1];
+  std::string name = argv[2];
+
+  if (Fcmb::InvalidDir(directory)) {
+    std::cout << "Invalid directory name given!" << std::endl;
+    return 2;
+  }
+
+  std::ostringstream oss;
+  oss << directory << name << ".bmp";
+  std::string bitmap = oss.str();
+
+  LOG(bitmap)
+
+  try
+  {
+      Scanner scanner(bitmap);
+      scanner.ScanImage();
+  }
+  catch (const ScannerException& e)
+  {
+    std::cout << e.what() << std::endl;
+    return 1;
+  }
+
+  Cwsq cwsq(bitmap);
+  cwsq.Execute();
+
+  Mindtct mindtct(directory + name);
+  mindtct.Execute();
+
+  oss.str(""); // clear ostream
+  oss << directory << "bmp/" << name << ".bmp";
+  Fcmb::MoveBinary(bitmap, oss.str());
+
+  return 0;
 }
