@@ -31,7 +31,6 @@ Cwsq::Cwsq(const std::string& image_path)
 
 Cwsq::~Cwsq()
 {
-
 }
 
 void Cwsq::execute()

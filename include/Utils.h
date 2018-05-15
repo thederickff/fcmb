@@ -32,5 +32,4 @@
   #define LOG(x)
 #endif
 
-
 #endif /* defined(__Fcmb__Scanner__) */
