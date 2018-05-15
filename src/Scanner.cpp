@@ -35,6 +35,7 @@ Scanner::Scanner(const std::string& output)
 
   if(m_Device == NULL)
   {
+    if (ftrScanGetLastError() == 21) std::cout << "Permission denied, are you root?" << std::endl;
     throw ScannerException("Failed to open device!");
   }
 }

@@ -28,7 +28,7 @@
 #include <ftrScanAPI.h>
 
 struct BitmapInfoHeader {
-  unsigned long int	size;
+  unsigned long int size;
   long int width;
   long int height;
   unsigned short int planes;
@@ -38,7 +38,7 @@ struct BitmapInfoHeader {
   long int xPelsPerMeter;
   long int yPelsPerMeter;
   unsigned long int clrUsed;
-  unsigned long int	clrImportant;
+  unsigned long int clrImportant;
 };
 
 struct RGBQuad {

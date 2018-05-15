@@ -53,7 +53,7 @@ int main(int argc, const char *argv[])
   oss << directory << name << ".bmp";
   std::string filename = oss.str();
 
-  std::cout << filename << std::endl;
+  LOG(filename)
 
   try
   {
