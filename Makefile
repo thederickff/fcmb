@@ -1,5 +1,5 @@
 # The C++ program compiler.
-CXX = g++ -std=c++11 -g
+CXX = g++ -std=c++11
 # The pre-processor options used by the cpp (man cpp for more).
 FLAGS = -m32 -Wall -O2 -Iinclude/
 # The directories in which source files reside.

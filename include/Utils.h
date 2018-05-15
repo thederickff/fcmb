@@ -24,7 +24,7 @@
 #ifndef __Fcmb__Utils__
 #define __Fcmb__Utils__
 
-#define DEBUG 1
+#define DEBUG 0
 
 #if DEBUG
   #define LOG(x) std::cout << x << std::endl;
