@@ -32,4 +32,22 @@
   #define LOG(x)
 #endif
 
+#include <fstream>
+
+namespace Fcmb {
+
+  inline bool FileExists(const std::string& filename)
+  {
+    return std::fstream(filename, std::ios::binary | std::ios::in).is_open();
+  }
+
+  inline bool InvalidDir(const std::string& dir)
+  {
+    return dir[dir.size()-1] != '/';
+  }
+
+  void CopyBinary(const std::string& source, const std::string& target);
+  void MoveBinary(const std::string& source, const std::string& target);
+}
+
 #endif /* defined(__Fcmb__Scanner__) */

@@ -21,56 +21,31 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include <iostream>
-#include <sstream>
-
-#include "Scanner.h"
-#include "Cwsq.h"
-#include "Mindtct.h"
 #include "Utils.h"
 
-int main(int argc, const char *argv[])
-{
-  if (argc != 3)
+#include <iostream>
+#include <fstream>
+
+namespace Fcmb {
+  void CopyBinary(const std::string& source, const std::string& target)
   {
-      std::cout << "usage: " << argv[0] << " <directory> <name> " << std::endl;
-      return 1;
+    LOG("Copying binary")
+    std::ifstream ifs(source, std::ios::binary);
+    if (!ifs) {
+      std::cout << "Failed to open file " << source << " for reading!" << std::endl;
+      return;
+    }
+    std::ofstream ofs(target, std::ios::binary);
+    if (!ofs) {
+      std::cout << "Failed to open file " << target << " for writing!" << std::endl;
+      return;
+    }
+    ofs << ifs.rdbuf();
   }
 
-  std::string directory = argv[1];
-  std::string name = argv[2];
-
-  if (Fcmb::InvalidDir(directory)) {
-    std::cout << "Invalid directory name given!" << std::endl;
-    return 2;
-  }
-
-  std::ostringstream oss;
-  oss << directory << name << ".bmp";
-  std::string bitmap = oss.str();
-
-  LOG(bitmap)
-
-  try
+  void MoveBinary(const std::string& source, const std::string& target)
   {
-      Scanner scanner(bitmap);
-      scanner.ScanImage();
+    CopyBinary(source, target);
+    remove(source.c_str());
   }
-  catch (const ScannerException& e)
-  {
-    std::cout << e.what() << std::endl;
-    return 1;
-  }
-
-  Cwsq cwsq(bitmap);
-  cwsq.Execute();
-
-  Mindtct mindtct(directory + name);
-  mindtct.Execute();
-
-  oss.str(""); // clear ostream
-  oss << directory << "bmp/" << name << ".bmp";
-  Fcmb::MoveBinary(bitmap, oss.str());
-
-  return 0;
 }
