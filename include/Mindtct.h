@@ -21,23 +21,24 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef __Fcmb__Cwsq__
-#define __Fcmb__Cwsq__
+#ifndef __Fcmb__Mindtct__
+#define __Fcmb__Mindtct__
 
 #include <iostream>
 #include <sstream>
 
-class Cwsq
+class Mindtct
 {
 public:
-  Cwsq(const std::string& image_path);
-  Cwsq(const Cwsq& scanner) = delete;
-  Cwsq& operator=(const Cwsq& scanner) = delete;
-  ~Cwsq();
+  Mindtct(const std::string& name);
+  Mindtct(const Mindtct& mindtct) = delete;
+  Mindtct& operator=(const Mindtct& mindtct) = delete;
+  ~Mindtct();
 
   void Execute();
 private:
   std::ostringstream m_Command;
+  std::string m_Name;
 };
 
-#endif /* defined(__Fcmb__Cwsq__) */
+#endif /* defined(__Fcmb__Mindtct__)*/

@@ -24,9 +24,10 @@
 #include <iostream>
 #include <sstream>
 
-#include "Utils.h"
 #include "Scanner.h"
 #include "Cwsq.h"
+#include "Mindtct.h"
+#include "Utils.h"
 
 bool isInvalid(const std::string& directory)
 {
@@ -51,17 +52,20 @@ int main(int argc, const char *argv[])
 
   std::ostringstream oss;
   oss << directory << name << ".bmp";
-  std::string filename = oss.str();
+  std::string bitmap = oss.str();
 
-  LOG(filename)
+  LOG(bitmap)
 
   try
   {
-      Scanner scanner(filename);
+      Scanner scanner(bitmap);
       scanner.ScanImage();
 
-      Cwsq cwsq(filename);
-      cwsq.execute();
+      Cwsq cwsq(bitmap);
+      cwsq.Execute();
+
+      Mindtct mindtct(directory + name);
+      mindtct.Execute();
   }
   catch (const ScannerException& e)
   {

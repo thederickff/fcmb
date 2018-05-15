@@ -33,7 +33,7 @@ Cwsq::~Cwsq()
 {
 }
 
-void Cwsq::execute()
+void Cwsq::Execute()
 {
   LOG("Executing Cwsq")
   system(m_Command.str().c_str());

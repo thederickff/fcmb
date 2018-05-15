@@ -21,23 +21,30 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef __Fcmb__Cwsq__
-#define __Fcmb__Cwsq__
+#include "Mindtct.h"
+#include "Utils.h"
 
-#include <iostream>
-#include <sstream>
-
-class Cwsq
+Mindtct::Mindtct(const std::string& name)
+: m_Name(name)
 {
-public:
-  Cwsq(const std::string& image_path);
-  Cwsq(const Cwsq& scanner) = delete;
-  Cwsq& operator=(const Cwsq& scanner) = delete;
-  ~Cwsq();
+  m_Command << "exec/mindtct " << name << ".wsq " << name;
+}
 
-  void Execute();
-private:
-  std::ostringstream m_Command;
-};
+Mindtct::~Mindtct()
+{
+  std::string extensions[] = {".brw", ".dm", ".hcm", ".lcm", ".lfm", ".min", ".qm", ".wsq"};
+  int size = sizeof(extensions) / sizeof(std::string);
+  LOG("Cleaning up files")
+  for (int i = 0; i < size; ++i)
+  {
+    remove((m_Name + extensions[i]).c_str());
+  }
+  LOG("Done!")
+}
 
-#endif /* defined(__Fcmb__Cwsq__) */
+void Mindtct::Execute()
+{
+  LOG("Executing Mindtct")
+  system(m_Command.str().c_str());
+  LOG("Done!")
+}
