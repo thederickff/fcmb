@@ -7,7 +7,7 @@ You can use the included software **Bozorth3** to calculate minutiae scores usin
 
 This project uses three softwares of NBIS (NIST Biometric Image Software (National Institute of Standards and Technology)), **Cwsq** (compress a bitmap file into a wsq), **Mindtct** (extracts fingerprint minutiae), and **Bozorth3** (Matches fingerprints minutiae).
 
-Currently, it only makes connection with fs80 scanners, but you can try with other Futronic's devices, good lucky!
+Currently, it only makes connection with fs80 and fs88 scanners, but you can try with other Futronic's devices, good lucky!
 
 ### Usage
 <code>fcmb &lt;directory&gt; &lt;name&gt;</code><br/>
