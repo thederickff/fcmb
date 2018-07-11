@@ -25,8 +25,12 @@
 #include "Utils.h"
 
 #include <cstring>
-#include <chrono>
-#include <thread>
+#ifdef _WIN32
+  #include <Windows.h>
+#else
+  #include <chrono>
+  #include <thread>
+#endif
 
 Scanner::Scanner(const std::string& output)
 : m_Output(output)
@@ -67,7 +71,11 @@ void Scanner::ScanImage()
     ftrScanSetDiodesStatus(m_Device, (unsigned int)100/2, 0); // green led ON, red led OFF
     if(ftrScanIsFingerPresent(m_Device, NULL)) break;
     // sleep
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    #ifdef _WIN32
+      Sleep(100);
+    #else
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    #endif
   }
 
   LOG("Capturing fingerprint...")

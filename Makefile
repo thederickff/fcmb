@@ -9,7 +9,11 @@ SRCDIRS = src bin
 # If not specified, current directory name or `a.out' will be used.
 PROGRAM = fcmb
 # The linker options.
-LIBS = lib/libScanAPI.so lib/libusb-0.1.so
+ifeq ($(OS),Windows_NT)
+	LIBS = lib/ftrScanAPI.a
+else
+	LIBS = lib/libScanAPI.so lib/libusb-0.1.so
+endif
 # The command used to delete file.
 RM = rm -f
 

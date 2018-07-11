@@ -27,7 +27,7 @@
 Mindtct::Mindtct(const std::string& name)
 : m_Name(name)
 {
-  m_Command << "exec/mindtct " << name << ".wsq " << name;
+  m_Command << "exec" << SEPARATOR << "mindtct " << name << ".wsq " << name;
 }
 
 Mindtct::~Mindtct()

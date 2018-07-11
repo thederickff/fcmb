@@ -26,7 +26,7 @@
 
 Cwsq::Cwsq(const std::string& image_path)
 {
-  m_Command << "exec/cwsq 2.25 wsq " << image_path << " -raw_in 320,480,8";
+  m_Command << "exec" << SEPARATOR << "cwsq 2.25 wsq " << image_path << " -raw_in 320,480,8";
 }
 
 Cwsq::~Cwsq()
