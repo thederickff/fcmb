@@ -45,6 +45,6 @@ Mindtct::~Mindtct()
 void Mindtct::Execute()
 {
   LOG("Executing Mindtct")
-  system(m_Command.str().c_str());
+  LOG(system(m_Command.str().c_str()))
   LOG("Done!")
 }
