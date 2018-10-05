@@ -45,6 +45,9 @@ Mindtct::~Mindtct()
 void Mindtct::Execute()
 {
   LOG("Executing Mindtct")
-  LOG(system(m_Command.str().c_str()))
-  LOG("Done!")
+  if (system(m_Command.str().c_str())) {
+    std::cout << "Failed to execute Mindtct!" << std::endl;
+  } else {
+    LOG("Done!")
+  }
 }

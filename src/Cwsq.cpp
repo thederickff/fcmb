@@ -36,6 +36,9 @@ Cwsq::~Cwsq()
 void Cwsq::Execute()
 {
   LOG("Executing Cwsq")
-  LOG(system(m_Command.str().c_str()))
-  LOG("Done!")
+  if (system(m_Command.str().c_str())) {
+    std::cout << "Failed to execute Cwsq!" << std::endl;
+  } else {
+    LOG("Done!")
+  }
 }
