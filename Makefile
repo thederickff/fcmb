@@ -1,7 +1,8 @@
 # The C++ program compiler.
 CXX = g++ -std=c++11
 # The pre-processor options used by the cpp (man cpp for more).
-FLAGS = -m32 -Wall -O2 -Iinclude/
+# FLAGS = -m32 -Wall -O2 -Iinclude/
+FLAGS = -Wall -O2 -Iinclude/
 # The directories in which source files reside.
 # If not specified, only the current directory will be searched.
 SRCDIRS = src bin
@@ -12,7 +13,13 @@ PROGRAM = fcmb
 ifeq ($(OS),Windows_NT)
 	LIBS = lib/ftrScanAPI.a
 else
-	LIBS = lib/libScanAPI.so lib/libusb-0.1.so
+	UNAME_P := $(shell uname -p)
+    ifneq ($(filter %86,$(UNAME_P)),)
+		LIBS = lib/libScanAPI_linux_x86.so lib/libusb-0.1_linux_x86.so
+    endif
+    ifneq ($(filter arm%,$(UNAME_P)),)
+		LIBS = lib/libScanAPI_linux_arm.so lib/libusb-0.1_linux_arm.so
+    endif
 endif
 # The command used to delete file.
 RM = rm -f
