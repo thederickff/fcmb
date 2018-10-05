@@ -11,14 +11,14 @@ SRCDIRS = src bin
 PROGRAM = fcmb
 # The linker options.
 ifeq ($(OS),Windows_NT)
-	LIBS = lib/ftrScanAPI.a
+    LIBS = lib/ftrScanAPI.a
 else
-	UNAME_P := $(shell uname -p)
-    ifneq ($(filter %86,$(UNAME_P)),)
-		LIBS = lib/libScanAPI_linux_x86.so lib/libusb-0.1_linux_x86.so
-    endif
-    ifneq ($(filter arm%,$(UNAME_P)),)
-		LIBS = lib/libScanAPI_linux_arm.so lib/libusb-0.1_linux_arm.so
+    UNAME_P := $(shell uname -p)
+    ifneq ($(filter arm%, $(UNAME_P)),)
+        LIBS = lib/libScanAPI_linux_arm.so lib/libusb-0.1_linux_arm.so
+    else
+	FLAGS += -m32
+        LIBS = lib/libScanAPI_linux_x86.so lib/libusb-0.1_linux_x86.so
     endif
 endif
 # The command used to delete file.
