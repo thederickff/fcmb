@@ -32,7 +32,6 @@
 *.app
 /dist/
 /build/
-/exec/
 
 # Program name
 fcmb
